@@ -160,6 +160,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 		saveAsFile.addActionListener(this);
 		exitFile.addActionListener(this);
 
+		// menu bar mnemonics
 		fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + f for file
 		newFile.setMnemonic(KeyEvent.VK_N);
 		openFile.setMnemonic(KeyEvent.VK_O);
@@ -209,6 +210,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.setCurrentDirectory(new File("."));
 
+			// only accepts txt files
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
 			fileChooser.setFileFilter(filter);
 
@@ -265,6 +267,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 					}
 
 				}
+
 				fileExist = true;
 			} else {
 				try {
@@ -278,7 +281,6 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 					fileOut.close();
 				}
 			}
-			// TODO it loads the existing file and saves onto it
 
 		}
 
@@ -307,7 +309,11 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 
 		// exit the program
 		if (e.getSource() == exitFile) {
-			System.exit(0);
+			if (true) {
+				new ClosingWithoutSavingFrame();
+			}
+			// TODO ask if the user wants to save the file before closing if the file is not
+			// saved
 		}
 	}
 }
