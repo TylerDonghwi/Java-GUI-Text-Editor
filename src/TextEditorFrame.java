@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -46,9 +47,14 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 	JMenuItem newFile;
 	JMenuItem openFile;
 	JMenuItem saveFile;
+	JMenuItem saveAsFile;
 	JMenuItem exitFile;
 
+	Boolean fileExist;
+	File existingFile;
+
 	TextEditorFrame() {
+		fileExist = false;
 
 		setJFrame(); // initialise JFrame Properties
 		setTextBox(); // Setting up the text area
@@ -78,6 +84,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 		this.setTitle("Text Editor");
 		this.setSize(600, 600);
 		this.setLayout(new FlowLayout());
+		this.setMinimumSize(new Dimension(100, 100));
 		this.setLocationRelativeTo(null); // it will be created at the middle of the screen
 		this.setResizable(true);
 
@@ -143,18 +150,28 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 		newFile = new JMenuItem("New");
 		openFile = new JMenuItem("Open");
 		saveFile = new JMenuItem("Save");
+		saveAsFile = new JMenuItem("Save as");
 		exitFile = new JMenuItem("Exit");
 
 		// actions
 		newFile.addActionListener(this);
 		openFile.addActionListener(this);
 		saveFile.addActionListener(this);
+		saveAsFile.addActionListener(this);
 		exitFile.addActionListener(this);
+
+		fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + f for file
+		newFile.setMnemonic(KeyEvent.VK_N);
+		openFile.setMnemonic(KeyEvent.VK_O);
+		saveFile.setMnemonic(KeyEvent.VK_S);
+		saveAsFile.setMnemonic(KeyEvent.VK_A);
+		exitFile.setMnemonic(KeyEvent.VK_E);
 
 		// adding elements
 		fileMenu.add(newFile);
 		fileMenu.add(openFile);
 		fileMenu.add(saveFile);
+		fileMenu.add(saveAsFile);
 		fileMenu.add(exitFile);
 		menuBar.add(fileMenu);
 
@@ -213,15 +230,60 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} finally {
+					existingFile = fileChooser.getSelectedFile();
 					fileIn.close();
 				}
 
+				// TODO opening file should allow saving it overwrites over it
 			}
 
 		}
 
 		// save file
 		if (e.getSource() == saveFile) {
+			PrintWriter fileOut = null;
+
+			if (fileExist == false) {
+				// if the file doesn't exist, create a new file
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setCurrentDirectory(new File("."));
+
+				int response = fileChooser.showSaveDialog(null);
+
+				if (response == JFileChooser.APPROVE_OPTION) {
+					File file;
+
+					file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+					try {
+						fileOut = new PrintWriter(file);
+						fileOut.println(textBox.getText());
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					} finally {
+						existingFile = fileChooser.getSelectedFile();
+						fileOut.close();
+					}
+
+				}
+				fileExist = true;
+			} else {
+				try {
+					fileOut = new PrintWriter(existingFile);
+
+					fileOut.println(textBox.getText());
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} finally {
+					fileOut.close();
+				}
+			}
+			// TODO it loads the existing file and saves onto it
+
+		}
+
+		if (e.getSource() == saveAsFile) {
+			// create a new file and save it
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.setCurrentDirectory(new File("."));
 
@@ -241,8 +303,9 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 				}
 
 			}
-
 		}
+
+		// exit the program
 		if (e.getSource() == exitFile) {
 			System.exit(0);
 		}
