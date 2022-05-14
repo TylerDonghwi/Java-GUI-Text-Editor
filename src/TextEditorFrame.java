@@ -5,10 +5,15 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -20,6 +25,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class TextEditorFrame extends JFrame implements ActionListener {
 
@@ -34,7 +40,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 	JColorChooser colourChooser;
 	JComboBox fontBox;
 
-	// Menu bar declaration
+	// Menu bar declarations
 	JMenuBar menuBar;
 	JMenu fileMenu;
 	JMenuItem newFile;
@@ -86,9 +92,11 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 	}
 
 	public void setScrollPane() {
+		// initialise the scroll bar
 		scrollPane = new JScrollPane(textBox);
 		scrollPane.setPreferredSize(new Dimension(500, 500));
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
 		// label for font spinner
 		fontLabel = new JLabel();
 		fontLabel.setText("Font:");
@@ -137,11 +145,13 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 		saveFile = new JMenuItem("Save");
 		exitFile = new JMenuItem("Exit");
 
+		// actions
 		newFile.addActionListener(this);
 		openFile.addActionListener(this);
 		saveFile.addActionListener(this);
 		exitFile.addActionListener(this);
 
+		// adding elements
 		fileMenu.add(newFile);
 		fileMenu.add(openFile);
 		fileMenu.add(saveFile);
@@ -152,28 +162,85 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+
+		// change text colour
 		if (e.getSource() == textColourButton) {
 			colourChooser = new JColorChooser();
 			textColour = colourChooser.showDialog(null, "Text Colour", textColour);
 			textBox.setForeground(textColour);
 		}
+
+		// change the background colour
 		if (e.getSource() == backgroundColourButton) {
 			colourChooser = new JColorChooser();
 			backgroundColour = colourChooser.showDialog(null, "Background Colour", backgroundColour);
 			textBox.setBackground(backgroundColour);
 		}
+
+		// change the font
 		if (e.getSource() == fontBox) {
 			textBox.setFont(new Font((String) fontBox.getSelectedItem(), Font.PLAIN, textBox.getFont().getSize()));
 		}
 
+		// create a new gui window
 		if (e.getSource() == newFile) {
-
+			new TextEditorFrame();
 		}
 
+		// open existing text file
 		if (e.getSource() == openFile) {
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setCurrentDirectory(new File("."));
+
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files", "txt");
+			fileChooser.setFileFilter(filter);
+
+			int response = fileChooser.showSaveDialog(null);
+
+			if (response == JFileChooser.APPROVE_OPTION) {
+				File file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+				Scanner fileIn = null;
+
+				try {
+					fileIn = new Scanner(file);
+					if (file.isFile()) {
+						while (fileIn.hasNextLine()) {
+							String line = fileIn.nextLine() + "\n";
+							textBox.append(line);
+						}
+					}
+
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} finally {
+					fileIn.close();
+				}
+
+			}
 
 		}
+
+		// save file
 		if (e.getSource() == saveFile) {
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setCurrentDirectory(new File("."));
+
+			int response = fileChooser.showSaveDialog(null);
+
+			if (response == JFileChooser.APPROVE_OPTION) {
+				File file;
+				PrintWriter fileOut = null;
+				file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+				try {
+					fileOut = new PrintWriter(file);
+					fileOut.println(textBox.getText());
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} finally {
+					fileOut.close();
+				}
+
+			}
 
 		}
 		if (e.getSource() == exitFile) {
