@@ -2,13 +2,18 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
@@ -27,6 +32,15 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 	JButton backgroundColourButton;
 	Color backgroundColour;
 	JColorChooser colourChooser;
+	JComboBox fontBox;
+
+	// Menu bar declaration
+	JMenuBar menuBar;
+	JMenu fileMenu;
+	JMenuItem newFile;
+	JMenuItem openFile;
+	JMenuItem saveFile;
+	JMenuItem exitFile;
 
 	TextEditorFrame() {
 
@@ -36,13 +50,19 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 		setFontSizeSpinner(); // font size spinner
 		setTextColourButton(); // text colour changer
 		setBackgroundColourButton(); // background colour changer
+		setFontBox(); // font box
+		setMenuBar(); // menu bar
 
 		// Adding all the components together
 		this.add(fontLabel);
 		this.add(fontSizeSpinner);
 		this.add(textColourButton);
 		this.add(backgroundColourButton);
+		this.add(fontBox);
 		this.add(scrollPane);
+		this.setJMenuBar(menuBar);
+
+		// set the JFrame visible
 		this.setVisible(true);
 	}
 
@@ -62,7 +82,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 		textBox = new JTextArea();
 		textBox.setLineWrap(true);
 		textBox.setWrapStyleWord(true);
-		textBox.setFont(new Font("Consolas", Font.PLAIN, 11)); // default font is Consolas and size 11
+		textBox.setFont(new Font("Consolas", Font.PLAIN, 14)); // default font is Consolas and size 11
 	}
 
 	public void setScrollPane() {
@@ -78,7 +98,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 		// set font size spinner
 		fontSizeSpinner = new JSpinner();
 		fontSizeSpinner.setPreferredSize(new Dimension(50, 25));
-		fontSizeSpinner.setValue(11);
+		fontSizeSpinner.setValue(14);
 		fontSizeSpinner.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -101,6 +121,35 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 		backgroundColourButton.addActionListener(this);
 	}
 
+	public void setFontBox() {
+		// deriving an array of all the strings of available fonts in java
+		String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+		fontBox = new JComboBox(fonts);
+		fontBox.addActionListener(this);
+		fontBox.setSelectedItem("Arial");
+	}
+
+	public void setMenuBar() {
+		menuBar = new JMenuBar();
+		fileMenu = new JMenu("File");
+		newFile = new JMenuItem("New");
+		openFile = new JMenuItem("Open");
+		saveFile = new JMenuItem("Save");
+		exitFile = new JMenuItem("Exit");
+
+		newFile.addActionListener(this);
+		openFile.addActionListener(this);
+		saveFile.addActionListener(this);
+		exitFile.addActionListener(this);
+
+		fileMenu.add(newFile);
+		fileMenu.add(openFile);
+		fileMenu.add(saveFile);
+		fileMenu.add(exitFile);
+		menuBar.add(fileMenu);
+
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == textColourButton) {
@@ -112,6 +161,23 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 			colourChooser = new JColorChooser();
 			backgroundColour = colourChooser.showDialog(null, "Background Colour", backgroundColour);
 			textBox.setBackground(backgroundColour);
+		}
+		if (e.getSource() == fontBox) {
+			textBox.setFont(new Font((String) fontBox.getSelectedItem(), Font.PLAIN, textBox.getFont().getSize()));
+		}
+
+		if (e.getSource() == newFile) {
+
+		}
+
+		if (e.getSource() == openFile) {
+
+		}
+		if (e.getSource() == saveFile) {
+
+		}
+		if (e.getSource() == exitFile) {
+			System.exit(0);
 		}
 	}
 }
