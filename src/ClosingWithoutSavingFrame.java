@@ -11,8 +11,11 @@ public class ClosingWithoutSavingFrame extends JFrame implements ActionListener 
 	JButton yes;
 	JButton no;
 	JButton cancel;
+	TextEditorFrame textFile;
 
-	public ClosingWithoutSavingFrame() {
+	public ClosingWithoutSavingFrame(TextEditorFrame textFile) {
+
+		this.textFile = textFile;
 
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setTitle("Close without saving?");
@@ -55,13 +58,14 @@ public class ClosingWithoutSavingFrame extends JFrame implements ActionListener 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == yes) {
-			System.out.println("yes");
+			textFile.saveFile();
+			System.exit(0);
 		}
 		if (e.getSource() == no) {
-			System.out.println("no");
+			System.exit(0);
 		}
 		if (e.getSource() == cancel) {
-			System.out.println("cancel");
+			this.dispose();
 		}
 
 	}

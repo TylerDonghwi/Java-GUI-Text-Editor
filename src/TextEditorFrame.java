@@ -178,6 +178,47 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 
 	}
 
+	public void saveFile() {
+		PrintWriter fileOut = null;
+
+		if (fileExist == false) {
+			// if the file doesn't exist, create a new file
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setCurrentDirectory(new File("."));
+
+			int response = fileChooser.showSaveDialog(null);
+
+			if (response == JFileChooser.APPROVE_OPTION) {
+				File file;
+
+				file = new File(fileChooser.getSelectedFile().getAbsolutePath());
+				try {
+					fileOut = new PrintWriter(file);
+					fileOut.println(textBox.getText());
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} finally {
+					existingFile = fileChooser.getSelectedFile();
+					fileOut.close();
+				}
+
+			}
+
+			fileExist = true;
+		} else {
+			try {
+				fileOut = new PrintWriter(existingFile);
+
+				fileOut.println(textBox.getText());
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} finally {
+				fileOut.close();
+			}
+		}
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
@@ -243,44 +284,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 
 		// save file
 		if (e.getSource() == saveFile) {
-			PrintWriter fileOut = null;
-
-			if (fileExist == false) {
-				// if the file doesn't exist, create a new file
-				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setCurrentDirectory(new File("."));
-
-				int response = fileChooser.showSaveDialog(null);
-
-				if (response == JFileChooser.APPROVE_OPTION) {
-					File file;
-
-					file = new File(fileChooser.getSelectedFile().getAbsolutePath());
-					try {
-						fileOut = new PrintWriter(file);
-						fileOut.println(textBox.getText());
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
-					} finally {
-						existingFile = fileChooser.getSelectedFile();
-						fileOut.close();
-					}
-
-				}
-
-				fileExist = true;
-			} else {
-				try {
-					fileOut = new PrintWriter(existingFile);
-
-					fileOut.println(textBox.getText());
-				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} finally {
-					fileOut.close();
-				}
-			}
+			saveFile();
 
 		}
 
@@ -310,7 +314,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 		// exit the program
 		if (e.getSource() == exitFile) {
 			if (true) {
-				new ClosingWithoutSavingFrame();
+				new ClosingWithoutSavingFrame(this);
 			}
 			// TODO add a feature for the program to see if the file is changed from last
 			// saved
