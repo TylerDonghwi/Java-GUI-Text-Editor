@@ -80,7 +80,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 
 	public void setJFrame() {
 		// initialise JFrame
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setTitle("Text Editor");
 		this.setSize(600, 600);
 		this.setLayout(new FlowLayout());
@@ -312,7 +312,7 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 			if (true) {
 				new ClosingWithoutSavingFrame();
 			}
-			// TODO ask if the user wants to save the file before closing if the file is not
+			// TODO add a feature for the program to see if the file is changed from last
 			// saved
 		}
 	}
