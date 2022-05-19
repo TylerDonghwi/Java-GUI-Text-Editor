@@ -206,12 +206,12 @@ public class TextEditorFrame extends JFrame implements ActionListener {
 
 			fileExist = true;
 		} else {
+			// if the file exists, save into the existing file
 			try {
 				fileOut = new PrintWriter(existingFile);
 
 				fileOut.println(textBox.getText());
 			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} finally {
 				fileOut.close();
